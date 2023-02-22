@@ -3,21 +3,24 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Activity {
-  final String nombre;
-  final String descripcion;
-  final String imagen;
+  String nombre;
+  String descripcion;
+  String imagen;
+  double precio;
 
   Activity({
     required this.nombre,
     required this.descripcion,
     required this.imagen,
+    required this.precio,
   });
 
-  factory Activity.fromJson(dynamic json) {
+  factory Activity.fromJson(Map<String, dynamic> json) {
     return Activity(
-      nombre: json['nombre'] as String,
-      descripcion: json['descripcion'] as String,
-      imagen: json['imagen'] as String,
+      nombre: json['nombre'] ?? '',
+      descripcion: json['descripcion'] ?? '',
+      imagen: json['imagen'] ?? '',
+      precio: (json['precio'] ?? 0).toDouble(),
     );
   }
 }
@@ -37,13 +40,15 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   Future<void> _getActivities() async {
-    final response = await http.get(Uri.parse('https://hotelmarrakech-kwh-default-rtdb.firebaseio.com/actividades.json'));
+    final response = await http.get(Uri.parse(
+        'https://hotelmarrakech-kwh-default-rtdb.firebaseio.com/actividades.json'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       List<Activity> activities = [];
       data.forEach((value) {
-        activities.add(Activity.fromJson(value));
+        final activityData = value as Map<String, dynamic>;
+        activities.add(Activity.fromJson(activityData));
       });
 
       setState(() {
@@ -53,7 +58,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       throw Exception('Error en la solicitud HTTP: ${response.statusCode}');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +70,38 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         itemCount: _activities.length,
         itemBuilder: (BuildContext context, int index) {
           final activity = _activities[index];
-          return ListTile(
-            title: Text(activity.nombre),
-            subtitle: Text(activity.descripcion),
-            leading: Image.network(activity.imagen),
+          return Card(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Image.network(activity.imagen),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        activity.nombre,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(activity.descripcion),
+                      SizedBox(height: 5),
+                      Text(
+                        '\$${activity.precio.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           );
         },
       )
