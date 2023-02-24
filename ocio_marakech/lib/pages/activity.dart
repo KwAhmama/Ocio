@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Activity {
   String nombre;
@@ -59,55 +60,56 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     }
   }
 
+  final user = FirebaseAuth.instance.currentUser!;
+
+  // sign user out method
+  void signUserOut() {
+    FirebaseAuth.instance.signOut();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
-        title: Text('Actividades'),
+        backgroundColor: Colors.grey[900],
+        actions: [
+          IconButton(
+            onPressed: signUserOut,
+            icon: Icon(Icons.logout),
+          )
+        ],
       ),
       body: _activities.isNotEmpty
           ? ListView.builder(
-        itemCount: _activities.length,
-        itemBuilder: (BuildContext context, int index) {
-          final activity = _activities[index];
-          return Card(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.network(activity.imagen),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        activity.nombre,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+              itemCount: _activities.length,
+              itemBuilder: (BuildContext context, int index) {
+                final activity = _activities[index];
+                return Card(
+                  child: ListTile(
+                    title: Text(activity.nombre),
+                    subtitle: Text(activity.descripcion),
+                    leading: Image.network(
+                      "https://drive.google.com/uc?export=view&id=" +
+                          activity.imagen,
+                      width: 100.0,
+                      height: 100.0,
+                      fit: BoxFit.cover,
+                    ),
+                    trailing: Text(
+                      '${activity.precio}' + '€',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0,
                       ),
-                      SizedBox(height: 5),
-                      Text(activity.descripcion),
-                      SizedBox(height: 5),
-                      Text(
-                        '\$${activity.precio.toStringAsFixed(2)}',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
-      )
+                );
+              },
+            )
           : Center(
-        child: CircularProgressIndicator(),
-      ),
+              child: CircularProgressIndicator(),
+            ),
     );
   }
 }

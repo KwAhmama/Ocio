@@ -15,6 +15,58 @@
       },
       "oauth_client": [
         {
+          "client_id": "233843702285-lqiua0jsma9vk662u6bat9cmfd7k2h50.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ocio_marakech",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "233843702285-8h6g61fihjk7t7jhrn2mebgh8fnf8cl7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSMIqjRaQIMIEtyiF4W63qL4lTDAys3mQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "233843702285-8h6g61fihjk7t7jhrn2mebgh8fnf8cl7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "233843702285-0augi4hitv41bn16squ4ao7vaji9e2fd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ocioMarakech"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:233843702285:android:448d7b1b8470a7114a7344",
+        "android_client_info": {
+          "package_name": "com.mycompany.ocio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "233843702285-b0an8vnog0jfj188k22uie7uil5vj8gi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.ocio",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
           "client_id": "233843702285-8h6g61fihjk7t7jhrn2mebgh8fnf8cl7.apps.googleusercontent.com",
           "client_type": 3
         }
