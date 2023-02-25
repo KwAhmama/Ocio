@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class Activity {
   String nombre;
@@ -70,9 +71,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.amber,
       appBar: AppBar(
-        backgroundColor: Colors.grey[900],
+        backgroundColor: Colors.teal,
         actions: [
           IconButton(
             onPressed: signUserOut,
@@ -86,25 +87,36 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               itemBuilder: (BuildContext context, int index) {
                 final activity = _activities[index];
                 return Card(
-                  child: ListTile(
-                    title: Text(activity.nombre),
-                    subtitle: Text(activity.descripcion),
-                    leading: Image.network(
-                      "https://drive.google.com/uc?export=view&id=" +
-                          activity.imagen,
-                      width: 100.0,
-                      height: 100.0,
-                      fit: BoxFit.cover,
-                    ),
-                    trailing: Text(
-                      '${activity.precio}' + '€',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30)),
+                    margin: EdgeInsets.all(15),
+                    elevation: 10,
+
+                    // Dentro de esta propiedad usamos ClipRRect
+                    child: ClipRRect(
+                      // Los bordes del contenido del card se cortan usando BorderRadius
+                      borderRadius: BorderRadius.circular(30),
+
+                      // EL widget hijo que será recortado segun la propiedad anterior
+                      child: Column(
+                        children: <Widget>[
+                          // Usamos el widget Image para mostrar una imagen
+                          CachedNetworkImage(
+                            imageUrl: activity.imagen,
+                            placeholder: (context, url) =>
+                                CircularProgressIndicator(),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                          ),
+
+                          // Usamos Container para el contenedor de la descripción
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            child: Text(activity.nombre),
+                          ),
+                        ],
                       ),
-                    ),
-                  ),
-                );
+                    ));
               },
             )
           : Center(
