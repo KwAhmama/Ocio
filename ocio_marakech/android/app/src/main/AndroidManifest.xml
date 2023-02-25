@@ -3,8 +3,7 @@
 
     <application
         android:label="Ocio"
-        android:icon="@drawable/kawtar_ahmama_1__removebg_preview"
->
+        android:icon="@drawable/kawtar_ahmama_1__removebg_preview">
 
 
         <activity
