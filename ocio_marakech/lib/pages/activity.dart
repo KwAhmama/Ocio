@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ocio_marakech/pages/activity_details.dart';
+import 'package:ocio_marakech/pages/home_page.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class Activity {
   String nombre;
@@ -20,7 +22,6 @@ class Activity {
     required this.precio,
     required this.rating,
     required this.comments,
-
   });
 
   factory Activity.fromJson(Map<String, dynamic> json) {
@@ -31,9 +32,6 @@ class Activity {
       precio: (json['precio'] ?? 0).toDouble(),
       rating: 0,
       comments: [],
-
-
-    
     );
   }
 }
@@ -45,7 +43,13 @@ class ActivitiesScreen extends StatefulWidget {
 
 class _ActivitiesScreenState extends State<ActivitiesScreen> {
   List<Activity> _activities = [];
-
+  int _currentPageIndex = 0;
+    int indx = 1;
+  final items = const [
+    Icon(Icons.home, size: 30, color: Colors.teal,),
+    Icon(Icons.favorite, size: 30, color: Colors.teal,),
+    Icon(Icons.person, size: 30, color:Colors.teal,)
+  ];
   @override
   void initState() {
     super.initState();
@@ -82,18 +86,33 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.amber,
+      backgroundColor: Colors.teal,
       appBar: AppBar(
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.amberAccent,
         actions: [
           IconButton(
             onPressed: signUserOut,
-            icon: Icon(Icons.logout),
+            icon: Icon(Icons.logout, color: Colors.teal,),
           )
         ],
+      ), bottomNavigationBar: CurvedNavigationBar(
+        items: items,
+        index: indx,
+        color: Colors.amber,
+        buttonBackgroundColor: Colors.white,
+        onTap: (selctedIndex){
+
+          setState(() {
+            indx = selctedIndex;
+          });
+        },
+        height: 70,
+        backgroundColor: Colors.transparent,
+        animationDuration: const Duration(milliseconds: 300),
+        // animationCurve: ,
       ),
       body: _activities.isNotEmpty
-          ? ListView.builder(
+          ? PageView.builder(
               itemCount: _activities.length,
               itemBuilder: (BuildContext context, int index) {
                 final activity = _activities[index];
@@ -107,38 +126,86 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       ),
                     );
                   },
-                  child: Card(
+                  child: Hero(
+                    tag: activity.nombre,
+                    child: Card(
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30)),
                       margin: EdgeInsets.all(15),
                       elevation: 10,
-
-                      // Dentro de esta propiedad usamos ClipRRect
-                      child: ClipRRect(
-                        // Los bordes del contenido del card se cortan usando BorderRadius
-                        borderRadius: BorderRadius.circular(30),
-
-                        // EL widget hijo que será recortado segun la propiedad anterior
-                        child: Column(
-                          children: <Widget>[
-                            // Usamos el widget Image para mostrar una imagen
-                            CachedNetworkImage(
-                              imageUrl: activity.imagen,
-                              placeholder: (context, url) =>
-                                  CircularProgressIndicator(),
-                              errorWidget: (context, url, error) =>
-                                  Icon(Icons.error),
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(30),
+                              child: CachedNetworkImage(
+                                imageUrl: activity.imagen,
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                                fit: BoxFit.cover,
+                              ),
                             ),
-
-                            // Usamos Container para el contenedor de la descripción
-                            Container(
-                              padding: EdgeInsets.all(10),
-                              child: Text(activity.nombre),
+                          ),
+                          Positioned(
+                            bottom: 20,
+                            left: 20,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  activity.nombre,
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Icon(Icons.attach_money,
+                                        color: Colors.white, size: 18),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      activity.precio.toString(),
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Icon(Icons.star,
+                                        color: Colors.white, size: 18),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      activity.rating.toString(),
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 );
+              },
+              scrollDirection: Axis.horizontal,
+              onPageChanged: (int index) {
+                setState(() {
+                  _currentPageIndex = index;
+                });
               },
             )
           : Center(
@@ -146,5 +213,21 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             ),
     );
   }
-}
 
+  Widget getSelectedWidget({required int index}){
+    Widget widget;
+    switch(index){
+      case 0:
+      
+        widget =  ActivitiesScreen();
+        break;
+      case 1:
+        widget =  HomePage();
+        break;
+      default:
+        widget =  HomePage();
+        break;
+    }
+    return widget;
+  }
+}
