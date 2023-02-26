@@ -42,13 +42,26 @@ class ActivitiesScreen extends StatefulWidget {
 }
 
 class _ActivitiesScreenState extends State<ActivitiesScreen> {
+  Color goldColor = Color(0xFFD7A949);
   List<Activity> _activities = [];
   int _currentPageIndex = 0;
-    int indx = 1;
+  int indx = 1;
   final items = const [
-    Icon(Icons.home, size: 30, color: Colors.teal,),
-    Icon(Icons.favorite, size: 30, color: Colors.teal,),
-    Icon(Icons.person, size: 30, color:Colors.teal,)
+    Icon(
+      Icons.home,
+      size: 30,
+      color: Colors.teal,
+    ),
+    Icon(
+      Icons.favorite,
+      size: 30,
+      color: Colors.teal,
+    ),
+    Icon(
+      Icons.person,
+      size: 30,
+      color: Colors.teal,
+    )
   ];
   @override
   void initState() {
@@ -88,20 +101,23 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     return Scaffold(
       backgroundColor: Colors.teal,
       appBar: AppBar(
-        backgroundColor: Colors.amberAccent,
+        backgroundColor: goldColor,
         actions: [
           IconButton(
             onPressed: signUserOut,
-            icon: Icon(Icons.logout, color: Colors.teal,),
+            icon: Icon(
+              Icons.logout,
+              color: Colors.teal,
+            ),
           )
         ],
-      ), bottomNavigationBar: CurvedNavigationBar(
+      ),
+      bottomNavigationBar: CurvedNavigationBar(
         items: items,
         index: indx,
-        color: Colors.amber,
+        color: goldColor,
         buttonBackgroundColor: Colors.white,
-        onTap: (selctedIndex){
-
+        onTap: (selctedIndex) {
           setState(() {
             indx = selctedIndex;
           });
@@ -155,16 +171,23 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                                 Text(
                                   activity.nombre,
                                   style: TextStyle(
-                                    fontSize: 28,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
+                                    shadows: [
+                                      Shadow(
+                                        color: Colors.black,
+                                        offset: Offset(2.0, 2.0),
+                                        blurRadius: 1.0,
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 SizedBox(height: 10),
                                 Row(
                                   children: [
                                     Icon(Icons.attach_money,
-                                        color: Colors.white, size: 18),
+                                        color: Colors.green, size: 18),
                                     SizedBox(width: 5),
                                     Text(
                                       activity.precio.toString(),
@@ -172,6 +195,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
+                                        shadows: [
+                                      Shadow(
+                                        color: Colors.black,
+                                        offset: Offset(2.0, 2.0),
+                                        blurRadius: 1.0,
+                                      ),
+                                    ],
                                       ),
                                     ),
                                   ],
@@ -180,7 +210,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                                 Row(
                                   children: [
                                     Icon(Icons.star,
-                                        color: Colors.white, size: 18),
+                                        color: goldColor, size: 18),
                                     SizedBox(width: 5),
                                     Text(
                                       activity.rating.toString(),
@@ -188,6 +218,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
+                                        shadows: [
+                                      Shadow(
+                                        color: Colors.black,
+                                        offset: Offset(2.0, 2.0),
+                                        blurRadius: 1.0,
+                                      ),
+                                    ],
                                       ),
                                     ),
                                   ],
@@ -214,18 +251,17 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     );
   }
 
-  Widget getSelectedWidget({required int index}){
+  Widget getSelectedWidget({required int index}) {
     Widget widget;
-    switch(index){
+    switch (index) {
       case 0:
-      
-        widget =  ActivitiesScreen();
+        widget = ActivitiesScreen();
         break;
       case 1:
-        widget =  HomePage();
+        widget = HomePage();
         break;
       default:
-        widget =  HomePage();
+        widget = HomePage();
         break;
     }
     return widget;
