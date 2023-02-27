@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,8 +7,6 @@ import 'package:ocio_marakech/components/mybuttons.dart';
 import 'package:ocio_marakech/components/square_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:ocio_marakech/utilities/connectSql.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -29,12 +28,39 @@ class _LoginPageState extends State<LoginPage> {
   String? uid;
   String? userEmail;
 
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
+  Future<User?> signInWithGoogle() async {
+    final GoogleSignInAccount? googleSignInAccount =
+        await googleSignIn.signIn();
+    if (googleSignInAccount != null) {
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
 
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
 
+      final UserCredential authResult =
+          await auth.signInWithCredential(credential);
+      final User? user = authResult.user;
 
+      if (user != null) {
+        assert(!user.isAnonymous);
+        assert(await user.getIdToken() != null);
 
+        final User currentUser = auth.currentUser!;
+        assert(user.uid == currentUser.uid);
 
+        print('Inicio de sesión con Google exitoso: ${user.displayName}');
+
+        return user;
+      }
+    }
+    return null;
+  }
 
   // sign user in method
   void signUserIn() async {
@@ -108,9 +134,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-
-
- /* void signUserIn() {
+  /* void signUserIn() {
  var connectSql = ConnectSql(user_name: emailController.text, user_pass: passwordController.text);
  Future<http.Response>? _futureAlbum;
  _futureAlbum = createAlbum("");
@@ -122,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.teal,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: Column(
@@ -130,11 +154,13 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               const SizedBox(height: 50),
 
+              //
               // logo
-              const Icon(
-                Icons.lock,
-                size: 100,
-                color: Colors.white,
+
+              Image.asset(
+                'lib/images/logo.png',
+                height: 100,
+                width: 100,
               ),
 
               const SizedBox(height: 50),
@@ -202,22 +228,16 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
 
-              const SizedBox(height: 50),
-
               // google + apple sign in buttons
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 // google button
 
                 SquareTile(
-                    imagePath: 'lib/images/google.png',
-                    //Login with google
-                    onTap: () =>     {
-
-                    },
+                  imagePath: 'lib/images/google.png',
+                  //Login with google
+                  onTap: () => {signInWithGoogle()},
                 )
               ]),
-
-              const SizedBox(height: 50),
 
               // not a member? register now
             ],

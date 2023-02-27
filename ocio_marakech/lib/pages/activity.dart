@@ -137,8 +137,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            ActivityDetailScreen(activity: activity),
+                        builder: (context) => ActivityDetailScreen(
+                            activity: activity, idActivity: index.toString()),
                       ),
                     );
                   },
@@ -196,12 +196,12 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                         shadows: [
-                                      Shadow(
-                                        color: Colors.black,
-                                        offset: Offset(2.0, 2.0),
-                                        blurRadius: 1.0,
-                                      ),
-                                    ],
+                                          Shadow(
+                                            color: Colors.black,
+                                            offset: Offset(2.0, 2.0),
+                                            blurRadius: 1.0,
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
@@ -219,12 +219,12 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                         shadows: [
-                                      Shadow(
-                                        color: Colors.black,
-                                        offset: Offset(2.0, 2.0),
-                                        blurRadius: 1.0,
-                                      ),
-                                    ],
+                                          Shadow(
+                                            color: Colors.black,
+                                            offset: Offset(2.0, 2.0),
+                                            blurRadius: 1.0,
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],

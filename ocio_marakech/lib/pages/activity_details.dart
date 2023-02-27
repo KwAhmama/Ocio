@@ -7,10 +7,34 @@ import 'package:ocio_marakech/pages/activity.dart';
 import 'package:ocio_marakech/utilities/sizes.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
+class Favoritos {
+  String idActividad;
+  String idUsuario;
+
+  Favoritos({
+    required this.idActividad,
+    required this.idUsuario,
+  });
+
+  factory Favoritos.fromJson(Map<String, dynamic> json) {
+    return Favoritos(
+      idActividad: json['idActividad'] ?? -1,
+      idUsuario: json['idUsuario'] ?? '',
+    );
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'idActividad': idActividad,
+      'idUsuario': idUsuario,
+    };
+  }
+}
+
 class ActivityDetailScreen extends StatefulWidget {
   final Activity activity;
+  final String idActivity;
 
-  ActivityDetailScreen({required this.activity});
+  ActivityDetailScreen({required this.activity, required this.idActivity});
 
   @override
   _ActivityDetailScreenState createState() => _ActivityDetailScreenState();
@@ -18,17 +42,19 @@ class ActivityDetailScreen extends StatefulWidget {
 
 class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
   bool isFavorite = false;
-  late User? user;
+  User? user;
   bool isLoading = true;
   String error = '';
+  List<Favoritos> _favAct = [];
 
   @override
   void initState() {
     super.initState();
-    getUser();
+    _getFavorites();
+    verifyFavorite();
   }
 
-  void getUser() async {
+  Future<void> _getFavorites() async {
     try {
       User? currentUser = FirebaseAuth.instance.currentUser;
       setState(() {
@@ -41,18 +67,88 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
         isLoading = false;
       });
     }
+
+    final response = await http.get(Uri.parse(
+        'https://hotelmarrakech-kwh-default-rtdb.firebaseio.com/favoritos.json'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      List<Favoritos> favAct = [];
+      data.forEach((value) {
+        final favoritosData = value as Map<String, dynamic>;
+        favAct.add(Favoritos.fromJson(favoritosData));
+        print(favoritosData);
+      });
+
+      setState(() {
+        _favAct = favAct;
+      });
+    } else {
+      throw Exception('Error en la solicitud HTTP: ${response.statusCode}');
+    }
   }
 
-  void toggleFavorite() {
-    setState(() {
-      isFavorite = !isFavorite;
-    });
+  void verifyFavorite() {
+    bool isCurrentActivity = _favAct.any((fav) =>
+        fav.idUsuario == user?.email && fav.idActividad == widget.idActivity);
+
+    if (isCurrentActivity) {
+      setState(() {
+        isFavorite = true;
+      });
+      return;
+    } else {
+      setState(() {
+        isFavorite = false;
+      });
+      return;
+    }
+  }
+
+  void toggleFavorite() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      return;
+    }
+
+    bool isCurrentActivity = _favAct.any((fav) =>
+        fav.idUsuario == currentUser.email &&
+        fav.idActividad == widget.idActivity);
+
+    if (isCurrentActivity) {
+      setState(() {
+        isFavorite = false;
+      });
+      _favAct.removeWhere((fav) =>
+          fav.idUsuario == currentUser.email &&
+          fav.idActividad == widget.idActivity);
+    } else {
+      setState(() {
+        isFavorite = true;
+      });
+      _favAct.add(Favoritos(
+        idActividad: widget.idActivity,
+        idUsuario: user!.email!,
+      ));
+    }
+
+    final response = await http.put(
+        Uri.parse(
+            'https://hotelmarrakech-kwh-default-rtdb.firebaseio.com/favoritos.json'),
+        body: jsonEncode(_favAct.map((fav) => fav.toJson()).toList()));
+
+    if (response.statusCode == 200) {
+      print('Favoritos actualizados');
+    } else {
+      print('Error al actualizar los favoritos');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-
+    print(widget.idActivity);
     if (isLoading) {
       return Scaffold(
         body: Center(
@@ -67,7 +163,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
       );
     } else {
       return Scaffold(
-        backgroundColor: Color.fromARGB(255, 0, 121, 107),
+        backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -90,7 +186,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                             topLeft: Radius.circular(42),
                             topRight: Radius.circular(42),
                           ),
-                          color: Color.fromARGB(255, 0, 121, 107),
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -118,7 +214,10 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                                   ),
                                 ),
                                 padding: const EdgeInsets.all(12),
-                                child: Icon(Icons.arrow_back , color:Color.fromARGB(255, 0, 121, 107),),
+                                child: Icon(
+                                  Icons.arrow_back,
+                                  color: Color.fromARGB(255, 0, 121, 107),
+                                ),
                               ),
                             ),
                             InkWell(
@@ -158,7 +257,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                 child: Text(
                   widget.activity.nombre,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.teal,
                     fontSize: SizeConfig.blockSizeHorizontal! * 7,
                   ),
                 ),
@@ -183,9 +282,9 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.person,     
-                    color: Color(0xFFD7A949),     
-                           
+                    const Icon(
+                      Icons.person,
+                      color: Color(0xFFD7A949),
                     ),
                     SizedBox(
                       width: SizeConfig.blockSizeHorizontal! * 2.5,
@@ -195,7 +294,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color:Colors.white,
+                        color: Color(0xFFD7A949),
                         fontSize: SizeConfig.blockSizeHorizontal! * 3,
                       ),
                     )
@@ -209,9 +308,9 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                 child: Text(
                   widget.activity.descripcion,
                   style: TextStyle(
-                    fontFamily:  'Georgia',
+                    fontFamily: 'Georgia',
                     fontSize: SizeConfig.blockSizeHorizontal! * 4,
-                    color: Colors.white,
+                    color: Colors.black,
                   ),
                 ),
               ),
@@ -253,8 +352,8 @@ class _FullScreenSliderState extends State<FullScreenSlider> {
           ),
           items: [
             Center(
-              child: Image.network(
-                widget.image,
+              child: CachedNetworkImage(
+                imageUrl: widget.image,
                 fit: BoxFit.cover,
                 height: SizeConfig.blockSizeVertical! * 50,
                 width: double.infinity,

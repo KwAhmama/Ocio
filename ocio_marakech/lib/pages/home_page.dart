@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    print(user.email);
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
@@ -26,9 +26,7 @@ class HomePage extends StatelessWidget {
           )
         ],
       ),
-      body: Center(
-
-      ),
+      body: Center(),
     );
   }
 }
