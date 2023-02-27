@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ocio_marakech/pages/activity.dart';
 import 'package:ocio_marakech/pages/home_page.dart';
 import 'package:ocio_marakech/pages/login_page.dart';
-import 'package:ocio_marakech/pages/myHomePage.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
@@ -16,7 +15,7 @@ class AuthPage extends StatelessWidget {
         builder: (context, snapshot) {
           // user is logged in
           if (snapshot.hasData) {
-            return ActivitiesScreen();
+            return HomePage();
           }
 
           // user is NOT logged in

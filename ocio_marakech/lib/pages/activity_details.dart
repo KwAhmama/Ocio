@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ocio_marakech/models/activities.dart';
 import 'package:ocio_marakech/pages/activity.dart';
 import 'package:ocio_marakech/utilities/sizes.dart';
 import 'package:carousel_slider/carousel_slider.dart';

@@ -3,38 +3,12 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ocio_marakech/models/activities.dart';
 import 'package:ocio_marakech/pages/activity_details.dart';
+import 'package:ocio_marakech/pages/favorites.dart';
 import 'package:ocio_marakech/pages/home_page.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-
-class Activity {
-  String nombre;
-  String descripcion;
-  String imagen;
-  double precio;
-  int rating;
-  List<String> comments;
-
-  Activity({
-    required this.nombre,
-    required this.descripcion,
-    required this.imagen,
-    required this.precio,
-    required this.rating,
-    required this.comments,
-  });
-
-  factory Activity.fromJson(Map<String, dynamic> json) {
-    return Activity(
-      nombre: json['nombre'] ?? '',
-      descripcion: json['descripcion'] ?? '',
-      imagen: json['imagen'] ?? '',
-      precio: (json['precio'] ?? 0).toDouble(),
-      rating: 0,
-      comments: [],
-    );
-  }
-}
+import 'package:ocio_marakech/pages/login_page.dart';
 
 class ActivitiesScreen extends StatefulWidget {
   @override
@@ -45,24 +19,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   Color goldColor = Color(0xFFD7A949);
   List<Activity> _activities = [];
   int _currentPageIndex = 0;
-  int indx = 1;
-  final items = const [
-    Icon(
-      Icons.home,
-      size: 30,
-      color: Colors.teal,
-    ),
-    Icon(
-      Icons.favorite,
-      size: 30,
-      color: Colors.teal,
-    ),
-    Icon(
-      Icons.person,
-      size: 30,
-      color: Colors.teal,
-    )
-  ];
+
+
   @override
   void initState() {
     super.initState();
@@ -76,9 +34,11 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       List<Activity> activities = [];
+      int i = 0;
       data.forEach((value) {
         final activityData = value as Map<String, dynamic>;
-        activities.add(Activity.fromJson(activityData));
+        activities.add(Activity.fromJson(activityData, i));
+        i++;
       });
 
       setState(() {
@@ -100,33 +60,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.teal,
-      appBar: AppBar(
-        backgroundColor: goldColor,
-        actions: [
-          IconButton(
-            onPressed: signUserOut,
-            icon: Icon(
-              Icons.logout,
-              color: Colors.teal,
-            ),
-          )
-        ],
-      ),
-      bottomNavigationBar: CurvedNavigationBar(
-        items: items,
-        index: indx,
-        color: goldColor,
-        buttonBackgroundColor: Colors.white,
-        onTap: (selctedIndex) {
-          setState(() {
-            indx = selctedIndex;
-          });
-        },
-        height: 70,
-        backgroundColor: Colors.transparent,
-        animationDuration: const Duration(milliseconds: 300),
-        // animationCurve: ,
-      ),
+    
+      
       body: _activities.isNotEmpty
           ? PageView.builder(
               itemCount: _activities.length,
@@ -251,19 +186,17 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     );
   }
 
-  Widget getSelectedWidget({required int index}) {
-    Widget widget;
+  void getSelectedWidget({required int index}) {
     switch (index) {
       case 0:
-        widget = ActivitiesScreen();
+        FavoriteScrren();
         break;
       case 1:
-        widget = HomePage();
+        HomePage();
         break;
       default:
-        widget = HomePage();
+        LoginPage();
         break;
     }
-    return widget;
   }
 }
