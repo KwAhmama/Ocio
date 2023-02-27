@@ -83,6 +83,13 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
       setState(() {
         _favAct = favAct;
       });
+
+      _favAct.forEach((fav) {
+        if (fav.idUsuario == user?.email.toString() &&
+            fav.idActividad == widget.idActivity) {
+          isFavorite = true;
+        }
+      });
     } else {
       throw Exception('Error en la solicitud HTTP: ${response.statusCode}');
     }
