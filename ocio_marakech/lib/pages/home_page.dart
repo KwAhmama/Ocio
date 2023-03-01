@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:ocio_marakech/pages/activity.dart';
 import 'package:ocio_marakech/pages/favorites.dart';
 import 'package:ocio_marakech/pages/login_page.dart';
+import 'package:ocio_marakech/pages/myprofile.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -42,7 +43,7 @@ class _HomePageState extends State<HomePage> {
     )
   ];
 
-  final screens = [FavoriteScrren(), ActivitiesScreen(), LoginPage()];
+  final screens = [FavoriteScrren(), ActivitiesScreen(), UserProfileScreen()];
 
   @override
   Widget build(BuildContext context) {

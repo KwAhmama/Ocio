@@ -3,7 +3,7 @@ class Activity {
   String descripcion;
   String imagen;
   double precio;
-  int rating;
+  double rating;
   List<String> comments;
   int idActividad;
 
@@ -23,7 +23,7 @@ class Activity {
         descripcion: json['descripcion'] ?? '',
         imagen: json['imagen'] ?? '',
         precio: (json['precio'] ?? 0).toDouble(),
-        rating: 0,
+        rating: (json['rating'] ?? 0).toDouble(),
         comments: [],
         idActividad: idActividad);
   }

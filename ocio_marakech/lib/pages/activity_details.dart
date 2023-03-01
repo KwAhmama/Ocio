@@ -265,6 +265,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                 child: Text(
                   widget.activity.nombre,
                   style: TextStyle(
+                    fontFamily: 'Georgia',
                     color: Colors.teal,
                     fontSize: SizeConfig.blockSizeHorizontal! * 7,
                   ),
@@ -320,6 +321,53 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                     fontSize: SizeConfig.blockSizeHorizontal! * 4,
                     color: Colors.black,
                   ),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 40.0,
+                  vertical: 15,
+                ),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Icon(Icons.star, color: Colors.amber, size: 22),
+                    ),
+                    Text(
+                      widget.activity.rating.toString(),
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontFamily: 'Georgia',
+                        fontStyle: FontStyle.italic,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 40.0,
+                  vertical: 5,
+                ),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 3),
+                      child: Icon(Icons.attach_money,
+                          color: Colors.green, size: 22),
+                    ),
+                    Text(
+                      widget.activity.precio.toString() + ' €',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontFamily: 'Georgia',
+                        fontStyle: FontStyle.italic,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               SizedBox(

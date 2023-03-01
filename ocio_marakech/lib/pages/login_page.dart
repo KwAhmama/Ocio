@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ocio_marakech/components/my_textfield.dart';
 import 'package:ocio_marakech/components/mybuttons.dart';
-import 'package:ocio_marakech/components/square_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
@@ -25,42 +24,7 @@ class _LoginPageState extends State<LoginPage> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  String? uid;
-  String? userEmail;
-
-  final GoogleSignIn googleSignIn = GoogleSignIn();
   final FirebaseAuth auth = FirebaseAuth.instance;
-
-  Future<User?> signInWithGoogle() async {
-    final GoogleSignInAccount? googleSignInAccount =
-        await googleSignIn.signIn();
-    if (googleSignInAccount != null) {
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount.authentication;
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
-      );
-
-      final UserCredential authResult =
-          await auth.signInWithCredential(credential);
-      final User? user = authResult.user;
-
-      if (user != null) {
-        assert(!user.isAnonymous);
-        assert(await user.getIdToken() != null);
-
-        final User currentUser = auth.currentUser!;
-        assert(user.uid == currentUser.uid);
-
-        print('Inicio de sesión con Google exitoso: ${user.displayName}');
-
-        return user;
-      }
-    }
-    return null;
-  }
 
   // sign user in method
   void signUserIn() async {
@@ -198,7 +162,6 @@ class _LoginPageState extends State<LoginPage> {
                 onTap: signUserIn,
               ),
 
-              const SizedBox(height: 50),
 
               // or continue with
               Padding(
@@ -232,10 +195,21 @@ class _LoginPageState extends State<LoginPage> {
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 // google button
 
-                SquareTile(
-                  imagePath: 'lib/images/google.png',
-                  //Login with google
-                  onTap: () => {signInWithGoogle()},
+                GestureDetector(
+                  onTap: () {
+                    signInWithGoogle();},
+                  child: Container(
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(16),
+                      color: Colors.white,
+                    ),
+                    child: Image.asset(
+                      'lib/images/google.png',
+                      height: 40,
+                    ),
+                  ),
                 )
               ]),
 
@@ -245,5 +219,58 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  void signInWithGoogle() async {
+    // show loading circle
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      // sign in with Google
+      final GoogleSignInAccount? googleSignInAccount =
+          await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount!.authentication;
+
+      // authenticate with Firebase
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+      final User? user = userCredential.user;
+
+      // pop the loading circle
+      Navigator.pop(context);
+    } catch (e) {
+      // pop the loading circle
+      Navigator.pop(context);
+
+      // show error to user
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const AlertDialog(
+            backgroundColor: Colors.red,
+            title: Center(
+              child: Text(
+                'Error al iniciar sesión con Google',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          );
+        },
+      );
+    }
   }
 }
